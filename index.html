@@ -1,316 +1,162 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Luma Mate</title>
 
 <style>
 
-*{
-box-sizing:border-box;
-}
-
 body{
+font-family:Arial;
 margin:0;
-font-family:system-ui;
-background:#f3f6f3;
-color:#222;
+background:#f5f7f6;
 }
 
 header{
+background:#1f7a63;
+color:white;
+padding:20px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px 40px;
-background:#2E7D32;
-color:white;
 }
 
-.logo img{
-height:50px;
-}
-
-.header-buttons button{
-margin-left:10px;
-}
-
-button{
-border:none;
-padding:10px 14px;
-border-radius:8px;
-cursor:pointer;
+.logo{
+font-size:22px;
 font-weight:bold;
 }
 
 .cart-btn{
 background:white;
-color:#2E7D32;
+color:#1f7a63;
+border:none;
+padding:10px 15px;
+border-radius:8px;
+cursor:pointer;
 }
 
-.admin-btn{
-background:#1b5e20;
-color:white;
-}
-
-.hero{
-text-align:center;
-padding:60px 20px;
-}
-
-.hero h1{
-font-size:42px;
-color:#2E7D32;
-}
-
-.products{
+.container{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-gap:25px;
-padding:40px;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+padding:30px;
 }
 
 .card{
 background:white;
 border-radius:12px;
-padding:18px;
-box-shadow:0 8px 20px rgba(0,0,0,0.07);
-transition:.2s;
-}
-
-.card:hover{
-transform:translateY(-6px);
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+padding:15px;
+text-align:center;
 }
 
 .card img{
 width:100%;
+height:180px;
+object-fit:cover;
 border-radius:10px;
 }
 
-.price{
-color:#2E7D32;
-font-weight:bold;
-font-size:18px;
-}
-
-.stock{
-font-size:13px;
-color:#777;
-margin-bottom:10px;
-}
-
-.buy{
-background:#2E7D32;
+button{
+background:#1f7a63;
 color:white;
+border:none;
+padding:10px;
+border-radius:8px;
+cursor:pointer;
+margin-top:10px;
 }
 
 .cart{
 position:fixed;
-right:-360px;
+right:-350px;
 top:0;
-width:340px;
+width:350px;
 height:100%;
 background:white;
-box-shadow:-5px 0 20px rgba(0,0,0,0.25);
-padding:25px;
-transition:.35s;
-display:flex;
-flex-direction:column;
+box-shadow:-5px 0 20px rgba(0,0,0,0.2);
+padding:20px;
+transition:0.3s;
+overflow:auto;
 }
 
 .cart.open{
 right:0;
 }
 
-.cart-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
+.cart-item{
+border-bottom:1px solid #eee;
+padding:10px 0;
 }
 
 .close{
-font-size:22px;
-cursor:pointer;
-}
-
-.cart-items{
-flex:1;
-overflow:auto;
-margin-top:20px;
-}
-
-.cart-item{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
-}
-
-.total{
-font-weight:bold;
-font-size:20px;
-margin-top:10px;
-}
-
-.checkout{
-background:#2E7D32;
-color:white;
-margin-top:10px;
-}
-
-.whatsapp{
-background:#25D366;
-color:white;
-margin-top:10px;
-}
-
-.admin-panel{
-display:none;
-background:#e6f3e6;
-padding:40px;
-}
-
-.admin-panel input{
-padding:8px;
-margin:5px;
-}
-
-.admin-products{
-margin-top:20px;
-}
-
-.admin-product{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
-}
-
-footer{
-text-align:center;
-padding:20px;
-color:#777;
+background:red;
 }
 
 </style>
 
 </head>
 
+
 <body>
 
 <header>
 
-<div class="logo">
-<img src="logo.png">
-</div>
+<div class="logo">Luma Mate 🧉</div>
 
-<div class="header-buttons">
-
-<button class="cart-btn" onclick="toggleCart()">
-🛒 <span id="cartCount">0</span>
-</button>
-
-<button class="admin-btn" onclick="adminLogin()">
-Admin
-</button>
-
-</div>
+<button class="cart-btn" onclick="toggleCart()">Carrito (<span id="cartCount">0</span>)</button>
 
 </header>
 
-<section class="hero">
 
-<h1>Luma Mate</h1>
-<p>Yerbas seleccionadas para tu mate perfecto</p>
+<div class="container" id="productos"></div>
 
-</section>
-
-<section class="products" id="products"></section>
 
 <div class="cart" id="cart">
 
-<div class="cart-header">
-
 <h2>Carrito</h2>
 
-<div class="close" onclick="toggleCart()">✕</div>
+<div id="cartItems"></div>
+
+<br>
+
+<button onclick="comprar()">Comprar por WhatsApp</button>
+
+<br><br>
+
+<button class="close" onclick="toggleCart()">Cerrar</button>
 
 </div>
 
-<div class="cart-items" id="cartItems"></div>
-
-<div class="total">
-Total $<span id="total">0</span>
-</div>
-
-<button class="checkout" onclick="payMP()">
-Pagar con Mercado Pago
-</button>
-
-<button class="whatsapp" onclick="buyWhatsapp()">
-Comprar por WhatsApp
-</button>
-
-</div>
-
-<div class="admin-panel" id="adminPanel">
-
-<h2>Panel Admin</h2>
-
-<input id="name" placeholder="Producto">
-<input id="price" placeholder="Precio">
-<input id="stock" placeholder="Stock">
-<input id="img" placeholder="Imagen URL">
-
-<button onclick="addProduct()">Agregar</button>
-
-<div class="admin-products" id="adminProducts"></div>
-
-</div>
-
-<footer>
-Luma Mate © 2026
-</footer>
 
 <script>
 
-let products = JSON.parse(localStorage.getItem("products")) || [
+let productos = JSON.parse(localStorage.getItem("productos")) || []
 
-{
-id:1,
-name:"Yerba Tradicional",
-price:4500,
-stock:10,
-img:"https://yerbamateargentina.org.ar/wp-content/uploads/2019/04/yerba-mate.jpg"
-}
+let carrito = []
 
-]
 
-let cart=[]
+function renderProductos(){
 
-function renderProducts(){
+let html=""
 
-const container=document.getElementById("products")
+productos.forEach((p,i)=>{
 
-container.innerHTML=""
-
-products.forEach(p=>{
-
-container.innerHTML+=`
+html+=`
 
 <div class="card">
 
 <img src="${p.img}">
 
-<h3>${p.name}</h3>
+<h3>${p.nombre}</h3>
 
-<div class="price">$${p.price}</div>
+<p>$${p.precio}</p>
 
-<div class="stock">Stock: ${p.stock}</div>
+<p>Stock: ${p.stock}</p>
 
-<button class="buy" onclick="addCart(${p.id})">
-Agregar al carrito
-</button>
+<button onclick="agregar(${i})">Agregar</button>
 
 </div>
 
@@ -318,73 +164,69 @@ Agregar al carrito
 
 })
 
+document.getElementById("productos").innerHTML=html
+
 }
 
-function addCart(id){
 
-let p=products.find(x=>x.id==id)
+function agregar(i){
 
-if(p.stock<=0){
-alert("Sin stock")
+if(productos[i].stock<=0){
+
+alert("sin stock")
+
 return
-}
-
-cart.push(p)
-
-p.stock--
-
-updateCart()
-
-renderProducts()
 
 }
 
-function updateCart(){
+carrito.push(productos[i])
 
-let items=document.getElementById("cartItems")
+productos[i].stock--
 
-items.innerHTML=""
+localStorage.setItem("productos",JSON.stringify(productos))
 
-let total=0
+renderProductos()
 
-cart.forEach((p,i)=>{
+renderCart()
 
-items.innerHTML+=`
+}
+
+
+function renderCart(){
+
+let html=""
+
+carrito.forEach((p,i)=>{
+
+html+=`
 
 <div class="cart-item">
 
-${p.name} $${p.price}
+${p.nombre} - $${p.precio}
 
-<button onclick="removeCart(${i})">❌</button>
+<button onclick="eliminar(${i})">X</button>
 
 </div>
 
 `
 
-total+=p.price
-
 })
 
-document.getElementById("total").innerText=total
-document.getElementById("cartCount").innerText=cart.length
+document.getElementById("cartItems").innerHTML=html
+
+document.getElementById("cartCount").innerText=carrito.length
 
 }
 
-function removeCart(i){
 
-let p=cart[i]
+function eliminar(i){
 
-let prod=products.find(x=>x.id==p.id)
+carrito.splice(i,1)
 
-prod.stock++
-
-cart.splice(i,1)
-
-updateCart()
-
-renderProducts()
+renderCart()
 
 }
+
 
 function toggleCart(){
 
@@ -392,111 +234,23 @@ document.getElementById("cart").classList.toggle("open")
 
 }
 
-function payMP(){
 
-window.open("https://link.mercadopago.com.ar/TULINK")
+function comprar(){
 
-}
+let texto="Pedido:%0A"
 
-function buyWhatsapp(){
+carrito.forEach(p=>{
 
-let text="Hola quiero comprar:%0A"
-
-cart.forEach(p=>{
-
-text+=p.name+" $"+p.price+"%0A"
+texto+=p.nombre+" - $"+p.precio+"%0A"
 
 })
 
-window.open("https://wa.me/5492990000000?text="+text)
+window.open("https://wa.me/5490000000000?text="+texto)
 
 }
 
-function adminLogin(){
 
-let pass=prompt("Contraseña admin")
-
-if(pass==="lumamate"){
-
-document.getElementById("adminPanel").style.display="block"
-
-renderAdmin()
-
-}
-
-}
-
-function addProduct(){
-
-let p={
-
-id:Date.now(),
-
-name:document.getElementById("name").value,
-
-price:Number(document.getElementById("price").value),
-
-stock:Number(document.getElementById("stock").value),
-
-img:document.getElementById("img").value
-
-}
-
-products.push(p)
-
-saveProducts()
-
-renderProducts()
-
-renderAdmin()
-
-}
-
-function renderAdmin(){
-
-let container=document.getElementById("adminProducts")
-
-container.innerHTML=""
-
-products.forEach((p,i)=>{
-
-container.innerHTML+=`
-
-<div class="admin-product">
-
-${p.name} $${p.price} stock:${p.stock}
-
-<button onclick="deleteProduct(${i})">
-Eliminar
-</button>
-
-</div>
-
-`
-
-})
-
-}
-
-function deleteProduct(i){
-
-products.splice(i,1)
-
-saveProducts()
-
-renderProducts()
-
-renderAdmin()
-
-}
-
-function saveProducts(){
-
-localStorage.setItem("products",JSON.stringify(products))
-
-}
-
-renderProducts()
+renderProductos()
 
 </script>
 
