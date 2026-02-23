@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Luma Mate</title>
+
 <style>
 
 body{
 font-family:Arial;
 margin:0;
-background:#f5f7f6;
+background:#f4f7f6;
 }
 
 header{
 background:#1f7a63;
 color:white;
-padding:20px;
+padding:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
 
 .logo{
-font-size:22px;
+font-size:20px;
 font-weight:bold;
 }
 
@@ -38,15 +40,15 @@ cursor:pointer;
 
 .container{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;
-padding:30px;
+padding:20px;
 }
 
 .card{
 background:white;
 border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
 padding:15px;
 text-align:center;
 }
@@ -72,7 +74,7 @@ margin-top:10px;
 position:fixed;
 right:-350px;
 top:0;
-width:350px;
+width:320px;
 height:100%;
 background:white;
 box-shadow:-5px 0 20px rgba(0,0,0,0.2);
@@ -92,20 +94,39 @@ padding:10px 0;
 
 .close{
 background:red;
+margin-top:10px;
+}
+
+@media (max-width:600px){
+
+header{
+flex-direction:column;
+gap:10px;
+}
+
+.logo{
+font-size:18px;
+}
+
+.cart{
+width:100%;
+}
+
 }
 
 </style>
 
 </head>
 
-
 <body>
 
 <header>
 
-<div class="logo">Luma Web 🧉</div>
+<div class="logo">Luma Mate 🧉</div>
 
-<button class="cart-btn" onclick="toggleCart()">Carrito (<span id="cartCount">0</span>)</button>
+<button class="cart-btn" onclick="toggleCart()">
+Carrito (<span id="cartCount">0</span>)
+</button>
 
 </header>
 
@@ -123,8 +144,6 @@ background:red;
 
 <button onclick="comprar()">Comprar por WhatsApp</button>
 
-<br><br>
-
 <button class="close" onclick="toggleCart()">Cerrar</button>
 
 </div>
@@ -134,8 +153,7 @@ background:red;
 
 let productos = JSON.parse(localStorage.getItem("productos")) || []
 
-let carrito = []
-
+let carrito=[]
 
 function renderProductos(){
 
@@ -167,7 +185,6 @@ document.getElementById("productos").innerHTML=html
 
 }
 
-
 function agregar(i){
 
 if(productos[i].stock<=0){
@@ -189,7 +206,6 @@ renderProductos()
 renderCart()
 
 }
-
 
 function renderCart(){
 
@@ -217,7 +233,6 @@ document.getElementById("cartCount").innerText=carrito.length
 
 }
 
-
 function eliminar(i){
 
 carrito.splice(i,1)
@@ -226,17 +241,15 @@ renderCart()
 
 }
 
-
 function toggleCart(){
 
 document.getElementById("cart").classList.toggle("open")
 
 }
 
-
 function comprar(){
 
-let texto="Pedido:%0A"
+let texto="Hola quiero comprar:%0A"
 
 carrito.forEach(p=>{
 
@@ -247,7 +260,6 @@ texto+=p.nombre+" - $"+p.precio+"%0A"
 window.open("https://wa.me/542996287288?text="+texto)
 
 }
-
 
 renderProductos()
 
