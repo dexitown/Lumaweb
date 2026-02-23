@@ -9,54 +9,77 @@
 
 <style>
 
+*{
+box-sizing:border-box;
+}
+
 body{
 margin:0;
 font-family:system-ui;
-background:#F4F7F4;
+background:#f3f6f3;
 color:#222;
 }
 
 header{
-background:#2E7D32;
-color:white;
 display:flex;
 justify-content:space-between;
 align-items:center;
 padding:15px 40px;
+background:#2E7D32;
+color:white;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
 .logo img{
-height:55px;
+height:50px;
+}
+
+.cart-btn{
+background:white;
+color:#2E7D32;
+border:none;
+padding:8px 15px;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
 }
 
 .hero{
+
 text-align:center;
-padding:60px 20px;
+padding:70px 20px;
+
 }
 
 .hero h1{
-font-size:42px;
+
+font-size:44px;
 color:#2E7D32;
 margin-bottom:10px;
+
 }
 
 .hero p{
-color:#555;
+color:#666;
 }
 
 .products{
+
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-gap:25px;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:30px;
 padding:40px;
+
 }
 
 .card{
+
 background:white;
+padding:20px;
 border-radius:14px;
-padding:18px;
-box-shadow:0 8px 25px rgba(0,0,0,0.07);
-transition:.25s;
+box-shadow:0 8px 20px rgba(0,0,0,0.07);
+transition:.2s;
+
 }
 
 .card:hover{
@@ -69,92 +92,107 @@ border-radius:10px;
 }
 
 .price{
-font-size:18px;
-font-weight:bold;
 color:#2E7D32;
+font-weight:bold;
+font-size:20px;
 }
 
 .stock{
 font-size:13px;
 color:#777;
-}
-
-button{
-border:none;
-padding:10px 15px;
-border-radius:8px;
-cursor:pointer;
-font-weight:600;
+margin-bottom:10px;
 }
 
 .buy{
+
 background:#2E7D32;
 color:white;
+border:none;
+padding:10px;
+border-radius:8px;
+cursor:pointer;
+
 }
 
 .buy:hover{
-background:#4CAF50;
-}
-
-.cart-btn{
-background:#7B1E2B;
-color:white;
+background:#43a047;
 }
 
 .cart{
+
 position:fixed;
-right:-350px;
+right:-380px;
 top:0;
-width:350px;
+width:360px;
 height:100%;
 background:white;
-box-shadow:-5px 0 20px rgba(0,0,0,0.2);
+box-shadow:-5px 0 25px rgba(0,0,0,0.2);
 padding:25px;
-transition:.3s;
-overflow:auto;
+transition:.35s;
+display:flex;
+flex-direction:column;
+
 }
 
 .cart.open{
 right:0;
 }
 
+.cart-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.close-cart{
+cursor:pointer;
+font-size:22px;
+}
+
+.cart-items{
+flex:1;
+overflow:auto;
+margin-top:20px;
+}
+
 .cart-item{
 display:flex;
 justify-content:space-between;
-margin-bottom:12px;
+margin-bottom:10px;
 }
 
 .total{
+
 font-size:20px;
 font-weight:bold;
 margin-top:10px;
+
 }
 
 .checkout{
 background:#2E7D32;
 color:white;
-width:100%;
+border:none;
+padding:12px;
+border-radius:8px;
 margin-top:10px;
+cursor:pointer;
 }
 
 .whatsapp{
 background:#25D366;
 color:white;
-width:100%;
+border:none;
+padding:12px;
+border-radius:8px;
 margin-top:10px;
+cursor:pointer;
 }
 
-.admin{
-display:none;
-background:#e7efe7;
-padding:25px;
-}
-
-input{
-padding:10px;
-margin:5px;
-border-radius:6px;
-border:1px solid #ccc;
+footer{
+text-align:center;
+padding:20px;
+color:#777;
 }
 
 </style>
@@ -169,22 +207,16 @@ border:1px solid #ccc;
 <img src="logo.png">
 </div>
 
-<div>
-
 <button class="cart-btn" onclick="toggleCart()">
 🛒 <span id="cartCount">0</span>
 </button>
-
-<button onclick="login()">Admin</button>
-
-</div>
 
 </header>
 
 <section class="hero">
 
-<h1>LumaWeb</h1>
-<p>Ritual Matero</p>
+<h1>Luma Mate</h1>
+<p>Yerbas seleccionadas para tu mate perfecto</p>
 
 </section>
 
@@ -192,46 +224,56 @@ border:1px solid #ccc;
 
 <div class="cart" id="cart">
 
+<div class="cart-header">
+
 <h2>Carrito</h2>
 
-<div id="cartItems"></div>
+<div class="close-cart" onclick="toggleCart()">
+✕
+</div>
+
+</div>
+
+<div class="cart-items" id="cartItems"></div>
 
 <div class="total">
 Total $<span id="total">0</span>
 </div>
 
-<button class="checkout" onclick="payMP()">Pagar con Mercado Pago</button>
+<button class="checkout" onclick="payMP()">
+Pagar con Mercado Pago
+</button>
 
-<button class="whatsapp" onclick="buyWhatsapp()">Comprar por WhatsApp</button>
-
-</div>
-
-<div class="admin" id="admin">
-
-<h2>Panel Admin</h2>
-
-<input id="name" placeholder="Producto">
-
-<input id="price" placeholder="Precio">
-
-<input id="stock" placeholder="Stock">
-
-<input id="img" placeholder="URL imagen">
-
-<button onclick="addProduct()">Publicar</button>
+<button class="whatsapp" onclick="buyWhatsapp()">
+Comprar por WhatsApp
+</button>
 
 </div>
+
+<footer>
+
+Luma Mate © 2026
+
+</footer>
 
 <script>
 
-let products = JSON.parse(localStorage.getItem("products")) || [
+let products=[
 
 {
 id:1,
 name:"Yerba Tradicional",
 price:4500,
-stock:12,
+stock:10,
 img:"https://yerbamateargentina.org.ar/wp-content/uploads/2019/04/yerba-mate.jpg"
+},
+
+{
+id:2,
+name:"Yerba Suave",
+price:4800,
+stock:8,
+img:"https://cdn.shopify.com/s/files/1/0610/6180/7156/products/YerbaMate.jpg"
 }
 
 ]
@@ -259,7 +301,7 @@ container.innerHTML+=`
 <div class="stock">Stock: ${p.stock}</div>
 
 <button class="buy" onclick="addCart(${p.id})">
-Agregar
+Agregar al carrito
 </button>
 
 </div>
@@ -275,11 +317,8 @@ function addCart(id){
 let p=products.find(x=>x.id==id)
 
 if(p.stock<=0){
-
 alert("Sin stock")
-
 return
-
 }
 
 cart.push(p)
@@ -319,7 +358,6 @@ total+=p.price
 })
 
 document.getElementById("total").innerText=total
-
 document.getElementById("cartCount").innerText=cart.length
 
 }
@@ -348,7 +386,7 @@ document.getElementById("cart").classList.toggle("open")
 
 function payMP(){
 
-window.open("https://link.mercadopago.com.ar/link.mercadopago.com.ar/lumamate")
+window.open("https://link.mercadopago.com.ar/TULINK")
 
 }
 
@@ -362,43 +400,7 @@ text+=p.name+" $"+p.price+"%0A"
 
 })
 
-window.open("https://wa.me/5492996287288?text="+text)
-
-}
-
-function login(){
-
-let pass=prompt("Password")
-
-if(pass==="luma123"){
-
-document.getElementById("admin").style.display="block"
-
-}
-
-}
-
-function addProduct(){
-
-let p={
-
-id:Date.now(),
-
-name:document.getElementById("name").value,
-
-price:Number(document.getElementById("price").value),
-
-stock:Number(document.getElementById("stock").value),
-
-img:document.getElementById("img").value
-
-}
-
-products.push(p)
-
-localStorage.setItem("products",JSON.stringify(products))
-
-renderProducts()
+window.open("https://wa.me/5492990000000?text="+text)
 
 }
 
