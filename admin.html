@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Admin</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.panel{
+background:#1e293b;
+padding:30px;
+border-radius:12px;
+width:350px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+border:none;
+}
+
+button{
+background:#22c55e;
+border:none;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+width:100%;
+}
+
+.producto{
+background:#334155;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="login" class="panel">
+
+<h2>Login Admin</h2>
+
+<input id="user" placeholder="usuario">
+<input id="pass" type="password" placeholder="contraseña">
+
+<button onclick="login()">Entrar</button>
+
+</div>
+
+
+<div id="admin" class="panel" style="display:none">
+
+<h2>Panel Admin</h2>
+
+<input id="nombre" placeholder="Nombre producto">
+<input id="precio" placeholder="Precio">
+<input id="stock" placeholder="Stock">
+
+<input type="file" id="imagen">
+
+<button onclick="agregar()">Agregar</button>
+
+<div id="productos"></div>
+
+</div>
+
+
+<script>
+
+let productos = JSON.parse(localStorage.getItem("productos")) || []
+
+function login(){
+
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
+
+if(u=="admin" && p=="1234"){
+
+document.getElementById("login").style.display="none"
+document.getElementById("admin").style.display="block"
+
+render()
+
+}else{
+
+alert("datos incorrectos")
+
+}
+
+}
+
+
+function agregar(){
+
+let nombre=document.getElementById("nombre").value
+let precio=document.getElementById("precio").value
+let stock=document.getElementById("stock").value
+let file=document.getElementById("imagen").files[0]
+
+let reader=new FileReader()
+
+reader.onload=function(e){
+
+productos.push({
+nombre,
+precio,
+stock,
+img:e.target.result
+})
+
+localStorage.setItem("productos",JSON.stringify(productos))
+
+render()
+
+}
+
+reader.readAsDataURL(file)
+
+}
+
+
+function eliminar(i){
+
+productos.splice(i,1)
+
+localStorage.setItem("productos",JSON.stringify(productos))
+
+render()
+
+}
+
+
+function render(){
+
+let html=""
+
+productos.forEach((p,i)=>{
+
+html+=`
+
+<div class="producto">
+
+<img src="${p.img}" width="60">
+
+<br>
+
+${p.nombre}
+
+<br>
+
+$${p.precio}
+
+<br>
+
+stock: ${p.stock}
+
+<br><br>
+
+<button onclick="eliminar(${i})">Eliminar</button>
+
+</div>
+
+`
+
+})
+
+document.getElementById("productos").innerHTML=html
+
+}
+
+</script>
+
+</body>
+</html>
