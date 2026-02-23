@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin - Luma Mate</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#0f172a;
+color:white;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.panel{
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+}
+
+h2{
+margin-top:0;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:6px;
+border:none;
+}
+
+button{
+background:#22c55e;
+border:none;
+padding:12px;
+border-radius:8px;
+cursor:pointer;
+width:100%;
+font-size:15px;
+}
+
+.productos{
+margin-top:20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+}
+
+.producto{
+background:#334155;
+padding:15px;
+border-radius:10px;
+text-align:center;
+}
+
+.producto img{
+width:100%;
+height:120px;
+object-fit:cover;
+border-radius:8px;
+}
+
+.eliminar{
+background:red;
+margin-top:10px;
+}
+
+@media(max-width:600px){
+
+.container{
+padding:10px;
+}
+
+button{
+font-size:16px;
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+<div id="login" class="panel">
+
+<h2>Admin Luma Mate</h2>
+
+<input id="user" placeholder="usuario">
+
+<input id="pass" type="password" placeholder="contraseña">
+
+<button onclick="login()">Entrar</button>
+
+</div>
+
+
+<div id="admin" style="display:none">
+
+<div class="panel">
+
+<h2>Agregar producto</h2>
+
+<input id="nombre" placeholder="Nombre producto">
+
+<input id="precio" placeholder="Precio">
+
+<input id="stock" placeholder="Stock">
+
+<input type="file" id="imagen">
+
+<button onclick="agregar()">Publicar producto</button>
+
+</div>
+
+
+<div class="productos" id="lista"></div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let productos = JSON.parse(localStorage.getItem("productos")) || []
+
+function login(){
+
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
+
+if(u=="admin" && p=="1234"){
+
+document.getElementById("login").style.display="none"
+document.getElementById("admin").style.display="block"
+
+render()
+
+}else{
+
+alert("Datos incorrectos")
+
+}
+
+}
+
+function agregar(){
+
+let nombre=document.getElementById("nombre").value
+let precio=document.getElementById("precio").value
+let stock=document.getElementById("stock").value
+
+let file=document.getElementById("imagen").files[0]
+
+let reader=new FileReader()
+
+reader.onload=function(e){
+
+productos.push({
+
+nombre,
+precio,
+stock,
+img:e.target.result
+
+})
+
+localStorage.setItem("productos",JSON.stringify(productos))
+
+render()
+
+}
+
+reader.readAsDataURL(file)
+
+}
+
+function eliminar(i){
+
+productos.splice(i,1)
+
+localStorage.setItem("productos",JSON.stringify(productos))
+
+render()
+
+}
+
+function render(){
+
+let html=""
+
+productos.forEach((p,i)=>{
+
+html+=`
+
+<div class="producto">
+
+<img src="${p.img}">
+
+<h3>${p.nombre}</h3>
+
+<p>$${p.precio}</p>
+
+<p>Stock: ${p.stock}</p>
+
+<button class="eliminar" onclick="eliminar(${i})">Eliminar</button>
+
+</div>
+
+`
+
+})
+
+document.getElementById("lista").innerHTML=html
+
+}
+
+</script>
+
+</body>
+</html>
