@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Luma Mate</title>
+
+<style>
+
+body{
+margin:0;
+font-family:system-ui;
+background:#F4F7F4;
+color:#222;
+}
+
+header{
+background:#2E7D32;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 40px;
+}
+
+.logo img{
+height:55px;
+}
+
+.hero{
+text-align:center;
+padding:60px 20px;
+}
+
+.hero h1{
+font-size:42px;
+color:#2E7D32;
+margin-bottom:10px;
+}
+
+.hero p{
+color:#555;
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:25px;
+padding:40px;
+}
+
+.card{
+background:white;
+border-radius:14px;
+padding:18px;
+box-shadow:0 8px 25px rgba(0,0,0,0.07);
+transition:.25s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+}
+
+.card img{
+width:100%;
+border-radius:10px;
+}
+
+.price{
+font-size:18px;
+font-weight:bold;
+color:#2E7D32;
+}
+
+.stock{
+font-size:13px;
+color:#777;
+}
+
+button{
+border:none;
+padding:10px 15px;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+}
+
+.buy{
+background:#2E7D32;
+color:white;
+}
+
+.buy:hover{
+background:#4CAF50;
+}
+
+.cart-btn{
+background:#7B1E2B;
+color:white;
+}
+
+.cart{
+position:fixed;
+right:-350px;
+top:0;
+width:350px;
+height:100%;
+background:white;
+box-shadow:-5px 0 20px rgba(0,0,0,0.2);
+padding:25px;
+transition:.3s;
+overflow:auto;
+}
+
+.cart.open{
+right:0;
+}
+
+.cart-item{
+display:flex;
+justify-content:space-between;
+margin-bottom:12px;
+}
+
+.total{
+font-size:20px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.checkout{
+background:#2E7D32;
+color:white;
+width:100%;
+margin-top:10px;
+}
+
+.whatsapp{
+background:#25D366;
+color:white;
+width:100%;
+margin-top:10px;
+}
+
+.admin{
+display:none;
+background:#e7efe7;
+padding:25px;
+}
+
+input{
+padding:10px;
+margin:5px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+<img src="/Users/macbooksil/Downloads/logo.png">
+</div>
+
+<div>
+
+<button class="cart-btn" onclick="toggleCart()">
+🛒 <span id="cartCount">0</span>
+</button>
+
+<button onclick="login()">Admin</button>
+
+</div>
+
+</header>
+
+<section class="hero">
+
+<h1>LumaWeb</h1>
+<p>Descubrí las mejores yerbas para tu mate</p>
+
+</section>
+
+<section class="products" id="products"></section>
+
+<div class="cart" id="cart">
+
+<h2>Carrito</h2>
+
+<div id="cartItems"></div>
+
+<div class="total">
+Total $<span id="total">0</span>
+</div>
+
+<button class="checkout" onclick="payMP()">Pagar con Mercado Pago</button>
+
+<button class="whatsapp" onclick="buyWhatsapp()">Comprar por WhatsApp</button>
+
+</div>
+
+<div class="admin" id="admin">
+
+<h2>Panel Admin</h2>
+
+<input id="name" placeholder="Producto">
+
+<input id="price" placeholder="Precio">
+
+<input id="stock" placeholder="Stock">
+
+<input id="img" placeholder="URL imagen">
+
+<button onclick="addProduct()">Publicar</button>
+
+</div>
+
+<script>
+
+let products = JSON.parse(localStorage.getItem("products")) || [
+
+{
+id:1,
+name:"Yerba Tradicional",
+price:4500,
+stock:12,
+img:"https://yerbamateargentina.org.ar/wp-content/uploads/2019/04/yerba-mate.jpg"
+}
+
+]
+
+let cart=[]
+
+function renderProducts(){
+
+const container=document.getElementById("products")
+
+container.innerHTML=""
+
+products.forEach(p=>{
+
+container.innerHTML+=`
+
+<div class="card">
+
+<img src="${p.img}">
+
+<h3>${p.name}</h3>
+
+<div class="price">$${p.price}</div>
+
+<div class="stock">Stock: ${p.stock}</div>
+
+<button class="buy" onclick="addCart(${p.id})">
+Agregar
+</button>
+
+</div>
+
+`
+
+})
+
+}
+
+function addCart(id){
+
+let p=products.find(x=>x.id==id)
+
+if(p.stock<=0){
+
+alert("Sin stock")
+
+return
+
+}
+
+cart.push(p)
+
+p.stock--
+
+updateCart()
+
+renderProducts()
+
+}
+
+function updateCart(){
+
+let items=document.getElementById("cartItems")
+
+items.innerHTML=""
+
+let total=0
+
+cart.forEach((p,i)=>{
+
+items.innerHTML+=`
+
+<div class="cart-item">
+
+${p.name} $${p.price}
+
+<button onclick="removeCart(${i})">❌</button>
+
+</div>
+
+`
+
+total+=p.price
+
+})
+
+document.getElementById("total").innerText=total
+
+document.getElementById("cartCount").innerText=cart.length
+
+}
+
+function removeCart(i){
+
+let p=cart[i]
+
+let prod=products.find(x=>x.id==p.id)
+
+prod.stock++
+
+cart.splice(i,1)
+
+updateCart()
+
+renderProducts()
+
+}
+
+function toggleCart(){
+
+document.getElementById("cart").classList.toggle("open")
+
+}
+
+function payMP(){
+
+window.open("https://link.mercadopago.com.ar/link.mercadopago.com.ar/lumamate")
+
+}
+
+function buyWhatsapp(){
+
+let text="Hola quiero comprar:%0A"
+
+cart.forEach(p=>{
+
+text+=p.name+" $"+p.price+"%0A"
+
+})
+
+window.open("https://wa.me/5492996287288?text="+text)
+
+}
+
+function login(){
+
+let pass=prompt("Password")
+
+if(pass==="luma123"){
+
+document.getElementById("admin").style.display="block"
+
+}
+
+}
+
+function addProduct(){
+
+let p={
+
+id:Date.now(),
+
+name:document.getElementById("name").value,
+
+price:Number(document.getElementById("price").value),
+
+stock:Number(document.getElementById("stock").value),
+
+img:document.getElementById("img").value
+
+}
+
+products.push(p)
+
+localStorage.setItem("products",JSON.stringify(products))
+
+renderProducts()
+
+}
+
+renderProducts()
+
+</script>
+
+</body>
+</html>
