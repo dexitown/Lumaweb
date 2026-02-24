@@ -1,120 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Luma Mate</title>
 
-<style>
-
-body{
-font-family:Arial;
-margin:0;
-background:#f4f7f6;
-}
-
-header{
-background:#1f7a63;
-color:white;
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
-font-size:20px;
-font-weight:bold;
-}
-
-.cart-btn{
-background:white;
-color:#1f7a63;
-border:none;
-padding:10px 15px;
-border-radius:8px;
-cursor:pointer;
-}
-
-.container{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
-padding:20px;
-}
-
-.card{
-background:white;
-border-radius:12px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-padding:15px;
-text-align:center;
-}
-
-.card img{
-width:100%;
-height:180px;
-object-fit:cover;
-border-radius:10px;
-}
-
-button{
-background:#1f7a63;
-color:white;
-border:none;
-padding:10px;
-border-radius:8px;
-cursor:pointer;
-margin-top:10px;
-}
-
-.cart{
-position:fixed;
-right:-350px;
-top:0;
-width:320px;
-height:100%;
-background:white;
-box-shadow:-5px 0 20px rgba(0,0,0,0.2);
-padding:20px;
-transition:0.3s;
-overflow:auto;
-}
-
-.cart.open{
-right:0;
-}
-
-.cart-item{
-border-bottom:1px solid #eee;
-padding:10px 0;
-}
-
-.close{
-background:red;
-margin-top:10px;
-}
-
-@media (max-width:600px){
-
-header{
-flex-direction:column;
-gap:10px;
-}
-
-.logo{
-font-size:18px;
-}
-
-.cart{
-width:100%;
-}
-
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -122,58 +13,58 @@ width:100%;
 
 <header>
 
-<div class="logo">Luma Mate 🧉</div>
+<h1>Luma Mate 🧉</h1>
 
-<button class="cart-btn" onclick="toggleCart()">
-Carrito (<span id="cartCount">0</span>)
-</button>
+<button onclick="abrirCarrito()">🛒 Carrito</button>
 
 </header>
 
+<div id="productos" class="grid"></div>
 
-<div class="container" id="productos"></div>
-
-
-<div class="cart" id="cart">
+<div id="carrito" class="carrito">
 
 <h2>Carrito</h2>
 
-<div id="cartItems"></div>
-
-<br>
+<div id="listaCarrito"></div>
 
 <button onclick="comprar()">Comprar por WhatsApp</button>
 
-<button class="close" onclick="toggleCart()">Cerrar</button>
+<button onclick="cerrarCarrito()">Cerrar</button>
 
 </div>
 
+<script type="module">
 
-<script>
+import { db } from "./firebase.js"
 
-let productos = JSON.parse(localStorage.getItem("productos")) || []
+import {
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
 
 let carrito=[]
 
-function renderProductos(){
+async function cargarProductos(){
 
-let html=""
+const cont=document.getElementById("productos")
 
-productos.forEach((p,i)=>{
+const querySnapshot=await getDocs(collection(db,"productos"))
 
-html+=`
+querySnapshot.forEach(doc=>{
+
+const p=doc.data()
+
+cont.innerHTML+=`
 
 <div class="card">
 
-<img src="${p.img}">
+<img src="${p.imagen}">
 
 <h3>${p.nombre}</h3>
 
 <p>$${p.precio}</p>
 
-<p>Stock: ${p.stock}</p>
-
-<button onclick="agregar(${i})">Agregar</button>
+<button onclick='agregar(${JSON.stringify(p)})'>Agregar</button>
 
 </div>
 
@@ -181,45 +72,31 @@ html+=`
 
 })
 
-document.getElementById("productos").innerHTML=html
+}
+
+window.agregar=function(p){
+
+carrito.push(p)
+
+renderCarrito()
 
 }
 
-function agregar(i){
+function renderCarrito(){
 
-if(productos[i].stock<=0){
+const lista=document.getElementById("listaCarrito")
 
-alert("sin stock")
-
-return
-
-}
-
-carrito.push(productos[i])
-
-productos[i].stock--
-
-localStorage.setItem("productos",JSON.stringify(productos))
-
-renderProductos()
-
-renderCart()
-
-}
-
-function renderCart(){
-
-let html=""
+lista.innerHTML=""
 
 carrito.forEach((p,i)=>{
 
-html+=`
+lista.innerHTML+=`
 
-<div class="cart-item">
+<div>
 
-${p.nombre} - $${p.precio}
+${p.nombre} $${p.precio}
 
-<button onclick="eliminar(${i})">X</button>
+<button onclick="eliminar(${i})">❌</button>
 
 </div>
 
@@ -227,41 +104,45 @@ ${p.nombre} - $${p.precio}
 
 })
 
-document.getElementById("cartItems").innerHTML=html
-
-document.getElementById("cartCount").innerText=carrito.length
-
 }
 
-function eliminar(i){
+window.eliminar=function(i){
 
 carrito.splice(i,1)
 
-renderCart()
+renderCarrito()
 
 }
 
-function toggleCart(){
+window.abrirCarrito=function(){
 
-document.getElementById("cart").classList.toggle("open")
+document.getElementById("carrito").style.display="block"
 
 }
 
-function comprar(){
+window.cerrarCarrito=function(){
 
-let texto="Hola quiero comprar:%0A"
+document.getElementById("carrito").style.display="none"
+
+}
+
+window.comprar=function(){
+
+let numero="549299XXXXXXX"
+
+let mensaje="Hola quiero comprar:%0A"
 
 carrito.forEach(p=>{
 
-texto+=p.nombre+" - $"+p.precio+"%0A"
+mensaje+=p.nombre+" $"+p.precio+"%0A"
 
 })
 
-window.open("https://wa.me/542996287288?text="+texto)
+window.open("https://wa.me/"+numero+"?text="+mensaje)
 
 }
 
-renderProductos()
+cargarProductos()
 
 </script>
 
